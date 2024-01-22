@@ -636,6 +636,9 @@ def train_syndiff(device, args):
                 optimizer_gen_non_diffusive_2to1.swap_parameters_with_ema(store_params_in_ema=True)
         """
 
+        if args.use_ema:
+            optimizer_gen_diffusive_1.swap_parameters_with_ema(store_params_in_ema=True)
+            optimizer_gen_diffusive_2.swap_parameters_with_ema(store_params_in_ema=True)
         gen_diffusive_1.eval()
 
         val_ts_psnr = numpy.zeros((len(val_data_t),), numpy.float32)
@@ -662,8 +665,6 @@ def train_syndiff(device, args):
                 val_ts_psnr[i] = ts_psnr
                 val_ts_list.append(val_ts)
 
-        gen_diffusive_1.train()
-
         msg = "Epoch:%d  val_ts_psnr:%f/%f" % (epoch, val_ts_psnr.mean(), val_ts_psnr.std())
         gen_images_test = numpy.concatenate([val_data_s[0], val_ts_list[0], val_data_t[0]], 2)
         gen_images_test = numpy.expand_dims(gen_images_test, 0).astype(numpy.float32)
@@ -681,6 +682,10 @@ def train_syndiff(device, args):
 
         torch.save(gen_diffusive_1.state_dict(), os.path.join(exp_path, 'gen_diffusive_1_last.pth'))
         torch.save(gen_diffusive_2.state_dict(), os.path.join(exp_path, 'gen_diffusive_2_last.pth'))
+        if args.use_ema:
+            optimizer_gen_diffusive_1.swap_parameters_with_ema(store_params_in_ema=True)
+            optimizer_gen_diffusive_2.swap_parameters_with_ema(store_params_in_ema=True)
+        gen_diffusive_1.train()
 
 
 #%%

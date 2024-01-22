@@ -13,6 +13,8 @@ import torch.nn.functional as F
 
 import torchvision.transforms as transforms
 from skimage.metrics import structural_similarity as SSIM
+import platform
+import sys
 import pdb
 
 if platform.system() == 'Windows':
@@ -150,9 +152,10 @@ def load_checkpoint(checkpoint_dir, netG, name_of_network, epoch,device = 'cuda:
 
     checkpoint = torch.load(checkpoint_file, map_location=device)
     ckpt = checkpoint
-   
+    """
     for key in list(ckpt.keys()):
          ckpt[key[7:]] = ckpt.pop(key)
+    """
     netG.load_state_dict(ckpt)
     netG.eval()
 #%%
@@ -166,13 +169,13 @@ def sample_and_test(args):
     #loading dataset
     phase='test'
 
-    test_data_s, test_data_t, _, _ = common_pelvic.load_val_data(args.input_path, valid=True)
+    test_data_s, test_data_t, _, _ = common_pelvic.load_test_data(args.input_path, valid=True)
 
     #Initializing and loading network
     gen_diffusive_1 = NCSNpp(args).to(device)
     gen_diffusive_2 = NCSNpp(args).to(device)
 
-    checkpoint_file = os.path.join(checkpoint_path, "{}_{}.pth")
+    checkpoint_file = os.path.join(args.checkpoint_path, "{}_{}.pth")
     load_checkpoint(checkpoint_file, gen_diffusive_1,'gen_diffusive_1',epoch=str(epoch_chosen), device = device)
     load_checkpoint(checkpoint_file, gen_diffusive_2,'gen_diffusive_2',epoch=str(epoch_chosen), device = device)
 
@@ -322,6 +325,7 @@ if __name__ == '__main__':
     parser.add_argument('--z_emb_dim', type=int, default=256)
     parser.add_argument('--t_emb_dim', type=int, default=256)
     parser.add_argument('--batch_size', type=int, default=1, help='sample generating batch size')
+    parser.add_argument('--ngf', type=int, default=64)
     
     #optimizaer parameters    
     parser.add_argument('--lr_g', type=float, default=1.5e-4, help='learning rate g')
