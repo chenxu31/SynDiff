@@ -237,7 +237,6 @@ def sample_and_test(args):
             if args.output_path:
                 common_cmf.save_nii(syn_im, "syn_st_%d.nii.gz" % i)
 
-    print(test_ts_psnr)
     msg = ("test_st_psnr:%f/%f  test_st_ssim:%f/%f  test_st_mae:%f/%f  test_ts_psnr:%f/%f  test_ts_ssim:%f/%f  test_ts_mae:%f/%f\n" %
            (test_st_psnr.mean(), test_st_psnr.std(), test_st_ssim.mean(), test_st_ssim.std(), test_st_mae.mean(), test_st_mae.std(),
             test_ts_psnr.mean(), test_ts_psnr.std(), test_ts_ssim.mean(), test_ts_ssim.std(), test_ts_mae.mean(), test_ts_mae.std()))
