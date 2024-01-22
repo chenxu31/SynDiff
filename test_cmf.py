@@ -12,6 +12,7 @@ from dataset import CreateDatasetSynthesis
 import torch.nn.functional as F
 
 import torchvision.transforms as transforms
+import platform
 from skimage.metrics import structural_similarity as SSIM
 import pdb
 
