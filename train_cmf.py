@@ -3,7 +3,7 @@
 import argparse
 import torch
 import numpy as np
-
+import numpy
 import os
 
 import torch.autograd as autograd
@@ -599,6 +599,7 @@ def train_syndiff(device, args):
         pred2 = torch.cat((real_data1, pred2, gen_non_diffusive_2to1(pred2), fake_sample1_tilda[:,[0],:]),axis=-1)
         torchvision.utils.save_image(pred2, os.path.join(exp_path, 'sample2_translated_epoch_{}.png'.format(epoch)), normalize=True)
 
+        """
         if args.save_content:
             if epoch % args.save_content_every == 0:
                 print('Saving content.')
@@ -633,6 +634,7 @@ def train_syndiff(device, args):
                 optimizer_gen_diffusive_2.swap_parameters_with_ema(store_params_in_ema=True)
                 optimizer_gen_non_diffusive_1to2.swap_parameters_with_ema(store_params_in_ema=True)
                 optimizer_gen_non_diffusive_2to1.swap_parameters_with_ema(store_params_in_ema=True)
+        """
 
         gen_diffusive_1.eval()
 
@@ -676,6 +678,9 @@ def train_syndiff(device, args):
 
         msg += "  best_ts_psnr:%f" % best_psnr
         print(msg)
+
+        torch.save(gen_diffusive_1.state_dict(), os.path.join(exp_path, 'gen_diffusive_1_last.pth'))
+        torch.save(gen_diffusive_2.state_dict(), os.path.join(exp_path, 'gen_diffusive_2_last.pth'))
 
 
 #%%
