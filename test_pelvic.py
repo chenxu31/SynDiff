@@ -2,7 +2,7 @@
 import argparse
 import torch
 import numpy as np, h5py
-
+import numpy
 import os
 import torch.optim as optim
 import torchvision
