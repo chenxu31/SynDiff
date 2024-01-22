@@ -19,6 +19,7 @@ from skimage.metrics import structural_similarity as SSIM
 import platform
 import skimage.io
 import sys
+import pdb
 
 if platform.system() == 'Windows':
     UTIL_DIR = r"E:\我的坚果云\sourcecode\python\util"
@@ -207,8 +208,8 @@ def train_syndiff(device, args):
     
     nz = args.nz #latent dimension
 
-    dataset_s = common_pelvic.Dataset(args.input_path, "ct", n_slices=args.num_channels, debug=args.debug)
-    dataset_t = common_pelvic.Dataset(args.input_path, "cbct", n_slices=args.num_channels, debug=args.debug)
+    dataset_s = common_pelvic.Dataset(args.input_path, "ct", n_slices=1, debug=args.debug)
+    dataset_t = common_pelvic.Dataset(args.input_path, "cbct", n_slices=1, debug=args.debug)
 
     data_loader_s = torch.utils.data.DataLoader(dataset_s,
                                                batch_size=batch_size,
@@ -275,19 +276,6 @@ def train_syndiff(device, args):
     scheduler_disc_non_diffusive_cycle1 = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer_disc_non_diffusive_cycle1, args.num_epoch, eta_min=1e-5)
     scheduler_disc_non_diffusive_cycle2 = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer_disc_non_diffusive_cycle2, args.num_epoch, eta_min=1e-5)
     
-    
-    
-    #ddp
-    gen_diffusive_1 = nn.parallel.DistributedDataParallel(gen_diffusive_1, device_ids=[gpu])
-    gen_diffusive_2 = nn.parallel.DistributedDataParallel(gen_diffusive_2, device_ids=[gpu])
-    gen_non_diffusive_1to2 = nn.parallel.DistributedDataParallel(gen_non_diffusive_1to2, device_ids=[gpu])
-    gen_non_diffusive_2to1 = nn.parallel.DistributedDataParallel(gen_non_diffusive_2to1, device_ids=[gpu])    
-    disc_diffusive_1 = nn.parallel.DistributedDataParallel(disc_diffusive_1, device_ids=[gpu])
-    disc_diffusive_2 = nn.parallel.DistributedDataParallel(disc_diffusive_2, device_ids=[gpu])
-
-    disc_non_diffusive_cycle1 = nn.parallel.DistributedDataParallel(disc_non_diffusive_cycle1, device_ids=[gpu])
-    disc_non_diffusive_cycle2 = nn.parallel.DistributedDataParallel(disc_non_diffusive_cycle2, device_ids=[gpu])
-    
     exp = args.exp
     output_path = args.output_path
 
@@ -345,8 +333,6 @@ def train_syndiff(device, args):
     
     best_psnr = 0
     for epoch in range(init_epoch, args.num_epoch+1):
-        train_sampler.set_epoch(epoch)
-       
         for iteration, (data1, data2) in enumerate(zip(data_loader_s, data_loader_t)):
             x1 = data1["image"]
             x2 = data2["image"]
