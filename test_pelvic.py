@@ -179,11 +179,9 @@ def sample_and_test(args):
     T = get_time_schedule(args, device)
     
     pos_coeff = Posterior_Coefficients(args, device)
-         
-    save_dir = args.output_path
 
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+    if args.output_path and not os.path.exists(save_dir):
+        os.makedirs(args.output_path)
 
     test_st_psnr = numpy.zeros((len(test_data_t),), numpy.float32)
     test_ts_psnr = numpy.zeros((len(test_data_t),), numpy.float32)
@@ -211,7 +209,8 @@ def sample_and_test(args):
             test_ts_psnr[i] = common_metrics.psnr(syn_im, test_data_s[i])
             test_ts_ssim[i] = SSIM(syn_im, test_data_s[i], data_range=2.)
             test_ts_mae[i] = abs(common_pelvic.restore_hu(syn_im) - common_pelvic.restore_hu(test_data_s[i])).mean()
-            common_pelvic.save_nii(syn_im, "syn_ts_%d.nii.gz" % i)
+            if args.output_path:
+                common_pelvic.save_nii(syn_im, "syn_ts_%d.nii.gz" % i)
 
         for i in range(len(test_data_s)):
             syn_im = numpy.zeros(test_data_s[i].shape, numpy.float32)
@@ -232,11 +231,23 @@ def sample_and_test(args):
             test_st_psnr[i] = common_metrics.psnr(syn_im, test_data_t[i])
             test_st_ssim[i] = SSIM(syn_im, test_data_t[i], data_range=2.)
             test_st_mae[i] = abs(common_pelvic.restore_hu(syn_im) - common_pelvic.restore_hu(test_data_t[i])).mean()
-            common_pelvic.save_nii(syn_im, "syn_st_%d.nii.gz" % i)
+            if args.output_path:
+                common_pelvic.save_nii(syn_im, "syn_st_%d.nii.gz" % i)
 
     msg = ("test_st_psnr:%f/%f  test_st_ssim:%f/%f  test_st_mae:%f/%f  test_ts_psnr:%f/%f  test_ts_ssim:%f/%f  test_ts_mae:%f/%f\n" %
            (test_st_psnr.mean(), test_st_psnr.std(), test_st_ssim.mean(), test_st_ssim.std(), test_st_mae.mean(), test_st_mae.std(),
             test_ts_psnr.mean(), test_ts_psnr.std(), test_ts_ssim.mean(), test_ts_ssim.std(), test_ts_mae.mean(), test_ts_mae.std()))
+    print(msg)
+    if args.output_path:
+        with open(os.path.join(args.output_path, "result.txt"), "w") as f:
+            f.write(msg)
+
+        numpy.save(os.path.join(args.output_path, "st_psnr.npy"), test_st_psnr)
+        numpy.save(os.path.join(args.output_path, "ts_psnr.npy"), test_ts_psnr)
+        numpy.save(os.path.join(args.output_path, "st_ssim.npy"), test_st_ssim)
+        numpy.save(os.path.join(args.output_path, "ts_ssim.npy"), test_ts_ssim)
+        numpy.save(os.path.join(args.output_path, "st_mae.npy"), test_st_mae)
+        numpy.save(os.path.join(args.output_path, "ts_mae.npy"), test_ts_mae)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('syndiff parameters')
@@ -297,8 +308,8 @@ if __name__ == '__main__':
     #geenrator and training
     parser.add_argument('--exp', default='ixi_synth', help='name of experiment')
     parser.add_argument('--input_path', default="/home/chenxu/datasets/pelvic/h5_data_nonrigid", help='path to input data')
-    parser.add_argument('--checkpoint_path', help='path to checkpoint files')
-    parser.add_argument('--output_path', help='path to outputs')
+    parser.add_argument('--checkpoint_path', type=str, help='path to checkpoint files')
+    parser.add_argument('--output_path', type=str, default="", help='path to outputs')
 
     parser.add_argument('--dataset', default='cifar10', help='name of dataset')
     parser.add_argument('--image_size', type=int, default=32,
