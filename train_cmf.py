@@ -28,7 +28,7 @@ else:
 
 sys.path.append(UTIL_DIR)
 import common_metrics
-import common_pelvic_pt as common_pelvic
+import common_cmf_pt as common_cmf
 
 
 
@@ -208,8 +208,8 @@ def train_syndiff(device, args):
     
     nz = args.nz #latent dimension
 
-    dataset_s = common_pelvic.Dataset(args.input_path, "ct", n_slices=1, debug=args.debug)
-    dataset_t = common_pelvic.Dataset(args.input_path, "cbct", n_slices=1, debug=args.debug)
+    dataset_s = common_cmf.Dataset(args.input_path, "ct", n_slices=1, debug=args.debug)
+    dataset_t = common_cmf.Dataset(args.input_path, "mri", n_slices=1, debug=args.debug)
 
     data_loader_s = torch.utils.data.DataLoader(dataset_s,
                                                batch_size=batch_size,
@@ -224,7 +224,7 @@ def train_syndiff(device, args):
                                                pin_memory=True,
                                                drop_last = True)
 
-    val_data_s, val_data_t, _, _ = common_pelvic.load_val_data(args.input_path, valid=True)
+    val_data_s, val_data_t, _ = common_cmf.load_test_data(args.input_path)
 
     print('train data size:'+str(min(len(data_loader_s), len(data_loader_t))))
     to_range_0_1 = lambda x: (x + 1.) / 2.
@@ -665,7 +665,7 @@ def train_syndiff(device, args):
         msg = "Epoch:%d  val_ts_psnr:%f/%f" % (epoch, val_ts_psnr.mean(), val_ts_psnr.std())
         gen_images_test = numpy.concatenate([val_data_s[0], val_ts_list[0], val_data_t[0]], 2)
         gen_images_test = numpy.expand_dims(gen_images_test, 0).astype(numpy.float32)
-        gen_images_test = common_pelvic.generate_display_image(gen_images_test, is_seg=False)
+        gen_images_test = common_cmf.generate_display_image(gen_images_test, is_seg=False)
         skimage.io.imsave(os.path.join(exp_path, "gen_images_test.jpg"), gen_images_test)
 
         if val_ts_psnr.mean() > best_psnr:
@@ -738,7 +738,7 @@ if __name__ == '__main__':
     
     #geenrator and training
     parser.add_argument('--exp', default='ixi_synth', help='name of experiment')
-    parser.add_argument('--input_path', default="/home/chenxu/datasets/pelvic/h5_data_nonrigid", help='path to input data')
+    parser.add_argument('--input_path', default="/home/chenxu/datasets/cmf", help='path to input data')
     parser.add_argument('--output_path', help='path to output saves')
     parser.add_argument('--nz', type=int, default=100)
     parser.add_argument('--num_timesteps', type=int, default=4)
