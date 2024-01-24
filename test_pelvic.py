@@ -144,7 +144,7 @@ def sample_from_model(coefficients, generator, n_time, x_init, T, opt):
             x_new = sample_posterior(coefficients, x_0[:,[0],:], x, t)
             x = x_new.detach()
         
-    return x
+    return torch.clamp(x, -1., 1.)
 
 
 def load_checkpoint(checkpoint_dir, netG, name_of_network, epoch,device = 'cuda:0'):
