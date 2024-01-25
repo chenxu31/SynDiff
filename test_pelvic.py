@@ -183,7 +183,7 @@ def sample_and_test(args):
     
     pos_coeff = Posterior_Coefficients(args, device)
 
-    if args.output_path and not os.path.exists(save_dir):
+    if args.output_path and not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
 
     test_st_psnr = numpy.zeros((len(test_data_t),), numpy.float32)
