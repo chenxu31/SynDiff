@@ -169,7 +169,7 @@ def sample_and_test(args):
     #loading dataset
     phase='test'
 
-    test_data_t, test_data_s = common_ixi.load_test_data(args.input_path, "test")
+    test_data_s, test_data_t = common_ixi.load_test_data(args.input_path, "test")
 
     #Initializing and loading network
     gen_diffusive_1 = NCSNpp(args).to(device)
@@ -333,7 +333,7 @@ if __name__ == '__main__':
                             help='beta1 for adam')
     parser.add_argument('--beta2', type=float, default=0.9,
                             help='beta2 for adam')
-    parser.add_argument('--contrast1', type=str, default='T1',
+    parser.add_argument('--contrast1', type=str, default='PD',
                         help='contrast selection for model')
     parser.add_argument('--contrast2', type=str, default='T2',
                         help='contrast selection for model')

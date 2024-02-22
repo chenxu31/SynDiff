@@ -209,7 +209,7 @@ def train_syndiff(device, args):
     nz = args.nz #latent dimension
 
     dataset_s = common_ixi.Dataset(args.input_path, "t2", n_slices=1, debug=args.debug)
-    dataset_t = common_ixi.Dataset(args.input_path, "t1", n_slices=1, debug=args.debug)
+    dataset_t = common_ixi.Dataset(args.input_path, "pd", n_slices=1, debug=args.debug)
 
     data_loader_s = torch.utils.data.DataLoader(dataset_s,
                                                batch_size=batch_size,
@@ -224,7 +224,7 @@ def train_syndiff(device, args):
                                                pin_memory=True,
                                                drop_last = True)
 
-    val_data_t, val_data_s = common_ixi.load_test_data(args.input_path, "val")
+    val_data_s, val_data_t = common_ixi.load_test_data(args.input_path, "val")
 
     print('train data size:'+str(min(len(data_loader_s), len(data_loader_t))))
     to_range_0_1 = lambda x: (x + 1.) / 2.
