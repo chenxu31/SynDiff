@@ -681,6 +681,7 @@ def train_syndiff(device, args):
 
         msg += "  best_ts_psnr:%f" % best_psnr
         print(msg)
+        sys.stdout.flush()
 
         torch.save(gen_diffusive_1.state_dict(), os.path.join(exp_path, 'gen_diffusive_1_last.pth'))
         torch.save(gen_diffusive_2.state_dict(), os.path.join(exp_path, 'gen_diffusive_2_last.pth'))
