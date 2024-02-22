@@ -8,3 +8,8 @@ python train_cmf.py --gpu 0 --input_path ~/datasets/cmf --output_path ~/training
 
 python test_cmf.py --image_size 176 --num_channels 2 --num_channels_dae 32 --ch_mult 1 1 2 4 --num_timesteps 4 --num_res_blocks 2 --ngf 32 --embedding_type positional --z_emb_dim 256 --gpu 0 --input_path ~/datasets/cmf --checkpoint_path ~/training/checkpoints/syndiff/cmf --which_epoch best
 
+#ixi
+python train_ixi.py --gpu 0 --input_path ~/datasets/ixi/h5_data --output_path ~/training/checkpoints/syndiff --exp ixi --num_channels 2 --image_size 256 --num_channels_dae 64 --ch_mult 1 1 2 2 4 4 --num_timesteps 4 --num_res_blocks 2 --batch_size 1 --num_epoch 500 --ngf 64 --embedding_type positional --use_ema --ema_decay 0.999 --r1_gamma 1. --z_emb_dim 256 --lr_d 1e-4 --lr_g 1.6e-4 --lazy_reg 10
+
+python test_ixi.py --image_size 256 --num_channels 2 --num_channels_dae 64 --ch_mult 1 1 2 2 4 4 --num_timesteps 4 --num_res_blocks 2 --ngf 64 --embedding_type positional --z_emb_dim 256 --gpu 0 --input_path ~/datasets/ixi/h5_data --checkpoint_path ~/training/checkpoints/syndiff/ixi --which_epoch best
+
