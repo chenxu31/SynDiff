@@ -213,7 +213,7 @@ def sample_and_test(args):
             test_ts_ssim[i] = SSIM(syn_im, test_data_s[i], data_range=2.)
             test_ts_mae[i] = abs(syn_im - test_data_s[i]).mean()
             if args.output_path:
-                common_ixi.save_nii(syn_im, "syn_ts_%d.nii.gz" % i)
+                common_ixi.save_nii(syn_im, os.path.join(args.output_path, "syn_ts_%d.nii.gz" % i))
 
         for i in range(len(test_data_s)):
             syn_im = numpy.zeros(test_data_s[i].shape, numpy.float32)
@@ -235,7 +235,7 @@ def sample_and_test(args):
             test_st_ssim[i] = SSIM(syn_im, test_data_t[i], data_range=2.)
             test_st_mae[i] = abs(syn_im - test_data_t[i]).mean()
             if args.output_path:
-                common_ixi.save_nii(syn_im, "syn_st_%d.nii.gz" % i)
+                common_ixi.save_nii(syn_im, os.path.join(args.output_path, "syn_st_%d.nii.gz" % i))
 
     msg = ("test_st_psnr:%f/%f  test_st_ssim:%f/%f  test_st_mae:%f/%f  test_ts_psnr:%f/%f  test_ts_ssim:%f/%f  test_ts_mae:%f/%f\n" %
            (test_st_psnr.mean(), test_st_psnr.std(), test_st_ssim.mean(), test_st_ssim.std(), test_st_mae.mean(), test_st_mae.std(),
